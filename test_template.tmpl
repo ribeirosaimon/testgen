@@ -1,0 +1,49 @@
+package {{.PackageName}}_test
+
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func Test{{.Interface.InterfaceName}}(t *testing.T) {
+    // Given
+
+    // When
+
+    // Then
+	for _, tt := range []struct {
+		name    string
+		isError bool
+		auxFunc func() error
+	}{
+		{{- range .Methods}}
+            {{ $methodName := .MethodName }}
+        {
+            name:    "{{$methodName}} need be return success",
+            auxFunc: func() error {
+                // TODO: implement test for {{$methodName}}
+                return nil
+            },
+        },
+        {{- range .CountIfs}}
+        {
+            name:    "{{$methodName}} need be return error for if {{.}}",
+            isError: true,
+            auxFunc: func() error {
+                // TODO: implement test for {{$methodName}} (if {{.}})
+                return nil
+            },
+        },
+        {{- end}}
+        {{- end}}
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.auxFunc()
+			if tt.isError {
+				assert.NotNil(t, err)
+				return
+			}
+			assert.Nil(t, err)
+		})
+	}
+}
